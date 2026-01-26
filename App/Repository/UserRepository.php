@@ -41,7 +41,9 @@ class UserRepository extends AbstractRepository
             $id = $this->connect->lastInsertId();
             $entity->setId($id);
         }
-        catch(\PDOException $e){}
+        catch(\Exception $e){
+            echo $e->getMessage();
+        }
         return $entity;
     }
 
@@ -58,11 +60,16 @@ class UserRepository extends AbstractRepository
             //5 exécuter la requête
             $req->execute();
             //6 récupérer la réponse (SELECT)
-            $user = (bool) $req->fetch();
+            $user = $req->fetch();
+            if (empty($user)) {
+                return false;
+            } else {
+                return true;
+            }
         } catch(\PDOException $e){
             return false;
         }
-        return $user;
+
     }
 
     public function findByEmail(string $email): ?User

@@ -40,7 +40,7 @@ class RegisterController extends AbstractController
                         ->setCreatedAt(new \DateTimeImmutable())
                         ->setRoles("ROLE_USER");
                     //Test si le compte n'existe pas déja
-                    if ($this->userRepository->isUserExists($_POST["email"], $_POST["pseudo"])) {
+                    if (!$this->userRepository->isUserExists($_POST["email"], $_POST["pseudo"])) {
                         //Hash du passwords
                         $hash = password_hash($_POST["password"], PASSWORD_DEFAULT);
                         $user->setPassword($hash);
@@ -48,6 +48,9 @@ class RegisterController extends AbstractController
                         //ajout en BDD
                         $this->userRepository->save($user);
                         $data["msg"] = "Le compte a été ajouté en BDD";
+                    } else 
+                    {
+                         $data["msg"] = "Le compte existe déjà en BDD";
                     }
                 } 
                 //Sinon les champs ne sont pas identiques
@@ -60,7 +63,7 @@ class RegisterController extends AbstractController
                 $data["msg"] = "Veuillez remplir les champs du formulaire";
             }
         }
-        return $this->render("register", "S'inscrire");
+        return $this->render("register", "S'inscrire", $data);
     }
 
     //Méthode pour se connecter
