@@ -6,16 +6,15 @@ session_start();
 
 include '../vendor/autoload.php';
 //Import des ressources
-//fichier .env
 use Dotenv\Dotenv;
 
+//Import du fichier .env
 $dotenv = Dotenv::createImmutable("../");
 $dotenv->load();
 
 //import des controllers
 use App\Controller\HomeController;
 use App\Controller\RegisterController;
-
 
 //instancier les controllers
 $homeController = new HomeController();

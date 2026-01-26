@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
-class Media
+use App\Entity\Entity;
+
+class Media extends Entity
 {
     //Attributs
     private ?int $id;

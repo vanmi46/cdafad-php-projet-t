@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use App\Entity\Media;
+use App\Entity\Entity;
 
-class User
+class User extends Entity
 {
     //Attributs
     private ?int $id;
