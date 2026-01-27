@@ -20,6 +20,7 @@ use App\Controller\CategoryController;
 //instancier les controllers
 $homeController = new HomeController();
 $registerController = new RegisterController();
+$categoryController = new CategoryController();
 
 //Analyse de l'URL avec parse_url() et retourne ses composants
 $url = parse_url($_SERVER['REQUEST_URI']);
