@@ -66,7 +66,7 @@ $router->map(Route::controller('GET', '/logout', App\Controller\RegisterControll
 try  {
     $router->dispatch();
 } catch(RouteNotFoundException $re) {
-    echo $e->getMessage();
+    echo $re->getMessage();
 } catch(UnauthorizedException $ue) {
-    echo $e->getMessage();
+    echo $ue->getMessage();
 }
