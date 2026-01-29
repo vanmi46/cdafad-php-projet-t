@@ -8,12 +8,20 @@ use App\Service\Exception\UploadException;
 class UploadService
 {
     /**
-     * Constante du Service
+     * Attributs du service d'upload
      */
-    private const string UPLOAD_DIRECTORY = "assets/img/";
-    private const int UPLOAD_SIZE_MAX = 2097152;//2Mo soit 1024 * 1024 *2
-    private const array UPLOAD_FORMAT_WHITE_LIST = ["png", "jpeg", "jpg", "webp"];
+    private readonly string $uploadtarget;
+    private readonly int $uploadSizeMax;
+    private readonly string $uploadFormatWhiteList;
 
+    public function __construct()
+    {
+        //Initialisation des attributs (depuis le fichier .env)
+        $this->uploadtarget = $_ENV["UPLOAD_DIRECTORY"];
+        $this->uploadSizeMax = (int) $_ENV["UPLOAD_SIZE_MAX"];
+        $this->uploadFormatWhiteList = $_ENV["UPLOAD_FORMAT_WHITE_LIST"];
+    }
+    
     /**
      * Méthode pour uploader un fichier
      * @param array $files (super globale Files)
@@ -44,7 +52,7 @@ class UploadService
         //rename files
         $newName =  $this->renameFile($ext);
         $uploadTmp = $files["tmp_name"];
-        $uploadtarget = self::UPLOAD_DIRECTORY . $newName;
+        $uploadtarget = $this->uploadtarget . $newName;
 
         //move to Upload_directory
         move_uploaded_file($uploadTmp, $uploadtarget);
@@ -68,7 +76,7 @@ class UploadService
      */
     private function validateUploadSize(array $files): bool
     {
-        return $files["size"] > self::UPLOAD_SIZE_MAX;
+        return $files["size"] > $this->uploadSizeMax;
     }
 
     /**
@@ -78,7 +86,7 @@ class UploadService
      */
     private function validateUploadFormat(string $ext): bool
     {
-        return in_array($ext, self::UPLOAD_FORMAT_WHITE_LIST);
+        return in_array($ext, json_decode($this->uploadFormatWhiteList));
     }
 
     /**

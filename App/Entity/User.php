@@ -229,6 +229,7 @@ class User extends Entity
             }
         }
         $user->setMedia($media);
+        
         return $user;
     }
 }
