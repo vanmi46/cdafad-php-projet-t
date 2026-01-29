@@ -26,4 +26,4 @@ php -S 127.0.0.1:8000 -t public
 UPLOAD_DIRECTORY="assets/img/"
 UPLOAD_SIZE_MAX=2097152
 UPLOAD_FORMAT_WHITE_LIST='["png", "jpeg", "jpg", "webp"]'
-``` 
+```

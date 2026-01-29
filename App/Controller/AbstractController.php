@@ -5,6 +5,27 @@ namespace App\Controller;
 abstract class AbstractController
 {
     /**
+     * Retourne un token CSRF stable pour la session.
+     */
+    protected function getCsrfToken(): string
+    {
+        if (empty($_SESSION["csrf_token"])) {
+            $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION["csrf_token"];
+    }
+
+    /**
+     * Vérifie le token CSRF reçu.
+     */
+    protected function isCsrfTokenValid(array $post): bool
+    {
+        $token = $post["csrf_token"] ?? "";
+        $sessionToken = $_SESSION["csrf_token"] ?? "";
+        return !empty($token) && !empty($sessionToken) && hash_equals($sessionToken, $token);
+    }
+
+    /**
      * Méthode pour rendre une vue avec un template
      * @param string $template Le nom du template à inclure
      * @param string|null $title Le titre de la page
@@ -36,6 +57,7 @@ abstract class AbstractController
     public function jsonResponse(array $data, int $statusCode = 200): void
     {
         http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data, JSON_PRETTY_PRINT);
     }
     

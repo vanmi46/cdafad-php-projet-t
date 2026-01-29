@@ -2,13 +2,11 @@
 
 namespace App\Entity;
 
-use App\Entity\Entity;
 use Mithridatem\Validation\Attributes\NotBlank;
 use Mithridatem\Validation\Attributes\Length;
 
 class Category extends Entity
 {
-    //Attributs
     private ?int $id;
     #[NotBlank]
     #[Length(2, 50)]
@@ -16,13 +14,11 @@ class Category extends Entity
     private \DateTimeImmutable $createdAt;
     private ?\DateTimeImmutable $updatedAt;
 
-    //Constructeur
     public function __construct(string $name = "")
     {
         $this->name = $name;
     }
 
-    //Getters et Setters
     public function getId(): ?int
     {
         return $this->id;
@@ -73,20 +69,20 @@ class Category extends Entity
         if ($name == "created_at") {
             $this->createdAt = new \DateTimeImmutable($value);
         } 
-        if ($name == "udpated_at") {
+        if ($name == "updated_at") {
             $this->updatedAt = new \DateTimeImmutable($value);
         }
     }
 
     public static function hydrate(array $data): self 
     {
-        $category = new Category($_POST["name"]);
+        $category = new Category($data["name"] ?? "");
         foreach ($data as $key => $value) {
             //assignation des dates
             if ($key == "created_at" || $key == "createdAt") {
                 $category->setCreatedAt(new \DateTimeImmutable($value));
             }
-            if ($key == "udpated_at" || $key == "udpatedAt") {
+            if ($key == "updated_at" || $key == "updatedAt") {
                 $category->setUpdatedAt(new \DateTimeImmutable($value));
             }
         }

@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Media;
-use App\Entity\Entity;
 use Mithridatem\Validation\Attributes\NotBlank;
 use Mithridatem\Validation\Attributes\Email;
 use Mithridatem\Validation\Attributes\Length;
@@ -11,7 +9,6 @@ use Mithridatem\Validation\Attributes\Pattern;
 
 class User extends Entity
 {
-    //Attributs
     private ?int $id;
     private ?string $firstname;
     private ?string $lastname;
@@ -33,7 +30,6 @@ class User extends Entity
     private ?\DateTimeImmutable $deletedAt;
     private ?Media $media;
 
-    //Getters et Setters
     public function getId(): ?int
     {
         return $this->id;
@@ -195,37 +191,74 @@ class User extends Entity
         if ($name == "created_at") {
             $this->createdAt = new \DateTimeImmutable($value);
         }
+        if ($name == "updated_at") {
+            $this->updatedAt = new \DateTimeImmutable($value);
+        }
     }
 
-    //Hydratation
     public static function hydrate(array $data): self
     {
         $user = new User();
-        $media = new Media("","",null);
+        $media = new Media();
         foreach ($data as $key => $value) {
-            if ($key == "created_at" || $key == "createdAt" ) {
-                $user->setCreatedAt(new \DateTimeImmutable($value));
-            }
-            else if ($key == "udpated_at" ||$key == "createdAt" ) {
-                $user->setUpdatedAt(new \DateTimeImmutable($value));
-            }
-            else if ($key == "deleted_at" || $key == "deletedAt") {
-                $user->setDeletedAt(new \DateTimeImmutable($value));
-            } 
-            else if ($key == "url_image") {
-                $media->setUrl($value);
-            }
-            else if ($key == "alt_image") {
-                $media->setAlt($value);
-            }
-            else if ($key == "created_at_image") {
-                $media->setCreatedAt(new \DateTimeImmutable($value));
-            }
-            else if ($key == "id_image") {
-                $media->setId($value);
-            }
-            else {
-                $user->$key = $value;
+            switch ($key) {
+                case "id":
+                    $user->setId((int) $value);
+                    break;
+                case "firstname":
+                    $user->setFirstname($value);
+                    break;
+                case "lastname":
+                    $user->setLastname($value);
+                    break;
+                case "pseudo":
+                    $user->setPseudo($value);
+                    break;
+                case "email":
+                    $user->setEmail($value);
+                    break;
+                case "password":
+                    $user->setPassword($value);
+                    break;
+                case "roles":
+                    $user->setRoles($value);
+                    break;
+                case "status":
+                    $user->setStatus((bool) $value);
+                    break;
+                case "active":
+                    $user->setActive((bool) $value);
+                    break;
+                case "deleted":
+                    $user->setDeleted((bool) $value);
+                    break;
+                case "created_at":
+                case "createdAt":
+                    $user->setCreatedAt(new \DateTimeImmutable($value));
+                    break;
+                case "updated_at":
+                case "updatedAt":
+                    $user->setUpdatedAt(new \DateTimeImmutable($value));
+                    break;
+                case "deleted_at":
+                case "deletedAt":
+                    $user->setDeletedAt(new \DateTimeImmutable($value));
+                    break;
+                case "url_image":
+                    $media->setUrl($value);
+                    break;
+                case "alt_image":
+                    $media->setAlt($value);
+                    break;
+                case "created_at_image":
+                    $media->setCreatedAt(new \DateTimeImmutable($value));
+                    break;
+                case "id_image":
+                    $media->setId((int) $value);
+                    break;
+                default:
+                    // Ignore unknown keys to avoid dynamic properties.
+                    break;
             }
         }
         $user->setMedia($media);

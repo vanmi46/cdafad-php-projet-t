@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Controller\AbstractController;
 use App\Service\Exception\UploadException;
 use App\Service\UploadService;
 
@@ -41,12 +40,17 @@ class HomeController extends AbstractController
     public function testUpload(): mixed
     {
         $data = [];
+        $data["csrf_token"] = $this->getCsrfToken();
         
         if ($this->isFormSubmitted($_POST)) {
+            if (!$this->isCsrfTokenValid($_POST)) {
+                $data["errors"]["_form"] = "Token CSRF invalide";
+                return $this->render("upload", "test upload files", $data);
+            }
             try {
                 $data["msg"] = "Le fichier : " . $this->uploadService->uploadFile($_FILES["upload"]) . " a été importé";
             } catch(UploadException $ue) {
-                $data["msg"] = $ue->getMessage();
+                $data["errors"]["upload"] = $ue->getMessage();
             }
         }
 

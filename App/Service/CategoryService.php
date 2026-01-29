@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Entity;
 use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Utils\Tools;
@@ -11,56 +10,51 @@ use Mithridatem\Validation\Exception\ValidationException;
 
 class CategoryService
 {
-    //Attributs
     private CategoryRepository $categoryRepository;
 
-    //Constructeur
     public function __construct()
     {
         $this->categoryRepository = new CategoryRepository();
     }
 
-    //Méthodes
-    public function saveCategory(array $post): string
+    public function saveCategory(array $post): array
     {
-        //Test si les champs sont remplis
+        $errors = [];
         if (empty($post["name"])) {
-            return "Veuillez remplir tous les champs du formulaire.";
+            $errors["name"] = "Le nom est obligatoire";
+            return ["errors" => $errors];
         }
 
-        //Nettoyage (super globale $_POST)
         Tools::sanitize_array($post);
 
-        //Test si la catégorie existe déja
         if ($this->categoryRepository->isCategoryExists($post["name"])) {
-            return "La catégorie " . $post["name"] . " existe déjà en BDD.";
+            return ["errors" => ["name" => "La categorie existe deja"]];
         }
         
-        //Création d'un objet Category
-        $category = new Category($_POST["name"]);
+        $category = new Category($post["name"]);
         $category->setCreatedAt(new \DateTimeImmutable());
         
         try {
             $this->validateCategory($category);
-
         } catch(ValidationException $ve) {
-            return $ve->getMessage();
+            return ["errors" => ["_form" => $ve->getMessage()]];
         }
 
-        //Ajout en BDD
-        $this->categoryRepository->save($category);
+        if ($this->categoryRepository->save($category) === null) {
+            return ["errors" => ["_form" => "Erreur lors de l'ajout de la categorie"]];
+        }
 
-        return "La catégorie a été ajouté en BDD.";
+        return ["message" => "La categorie a ete ajoutee en BDD"];
     }
 
-    public function getAllCategories(): string|array
+    public function getAllCategories(): array
     {
         $categories = $this->categoryRepository->findAll();
-        return empty($categories)? 'liste vide' : $categories;
+        return $categories ?? [];
     }
 
     /**
-     * Méthode pour valider une category
+     * Methode pour valider une category
      * @return void
      * @throws ValidationException
      */

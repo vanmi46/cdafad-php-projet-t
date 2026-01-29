@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Controller\AbstractController;
 use App\Service\CategoryService;
 
 class CategoryController extends AbstractController
@@ -17,9 +16,16 @@ class CategoryController extends AbstractController
     public function addCategorie(): mixed
     {
         $data = [];
+        $data["csrf_token"] = $this->getCsrfToken();
 
         if ($this->isFormSubmitted($_POST)) {
-            $data["msg"] = $this->categoryService->saveCategory($_POST);
+            if (!$this->isCsrfTokenValid($_POST)) {
+                $data["errors"]["_form"] = "Token CSRF invalide";
+                return $this->render("add_category", "Ajouter une categorie", $data);
+            }
+            $result = $this->categoryService->saveCategory($_POST);
+            $data["errors"] = $result["errors"] ?? [];
+            $data["msg"] = $result["message"] ?? "";
         }
 
         return $this->render("add_category", "Ajouter une categorie", $data);
@@ -28,6 +34,6 @@ class CategoryController extends AbstractController
     public function showAllCategories(): mixed
     {
         $categories = $this->categoryService->getAllCategories();
-        return $this->renderComponent("all_categories", $categories);
+        return $this->renderComponent("all_categories", ["categories" => $categories]);
     }
 }

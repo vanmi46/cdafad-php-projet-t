@@ -6,6 +6,7 @@ use App\Repository\AbstractRepository;
 use App\Entity\Entity;
 use App\Entity\Media;
 use DateTimeImmutable;
+use App\Utils\Logger;
 
 class MediaRepository extends AbstractRepository
 {
@@ -19,11 +20,15 @@ class MediaRepository extends AbstractRepository
             //$req->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, Media::class);
             
             $media = $req->fetch(\PDO::FETCH_ASSOC);
+            if (empty($media)) {
+                return null;
+            }
             $newMedia = new Media($media["url"], $media["alt"], new DateTimeImmutable($media["created_at"]));
             $newMedia->setId($media["id"]);
  
         } catch(\PDOException $e) {
-            echo $e->getMessage();
+            Logger::error("MediaRepository.find failed", ["error" => $e->getMessage()]);
+            return null;
         }
         return $newMedia;
     }
@@ -33,7 +38,7 @@ class MediaRepository extends AbstractRepository
         return [];
     }
 
-    public function save(Entity $entity): Media
+    public function save(Entity $entity): ?Media
     {
         try {
             $sql = "INSERT INTO media(`url`, alt, created_at) VALUE(?,?,?)";
@@ -45,7 +50,8 @@ class MediaRepository extends AbstractRepository
             $id = $this->connect->lastInsertId();
             $entity->setId($id);
         } catch(\PDOException $e) {
-            echo $e->getMessage();
+            Logger::error("MediaRepository.save failed", ["error" => $e->getMessage()]);
+            return null;
         }
         return $entity;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Controller\AbstractController;
 use App\Service\SecurityService;
 
 class RegisterController extends AbstractController
@@ -19,11 +18,18 @@ class RegisterController extends AbstractController
     public function register(): mixed
     {
         $data = [];
+        $data["csrf_token"] = $this->getCsrfToken();
         
         //Test si le formulaire est submit
         if ($this->isFormSubmitted($_POST,  "submit")) {
+            if (!$this->isCsrfTokenValid($_POST)) {
+                $data["errors"]["_form"] = "Token CSRF invalide";
+                return $this->render("register", "S'inscrire", $data);
+            }
             //Ajout du compte en BDD
-            $data["msg"] = $this->securityService->saveUser($_POST);
+            $result = $this->securityService->saveUser($_POST);
+            $data["errors"] = $result["errors"] ?? [];
+            $data["msg"] = $result["message"] ?? "";
         }
 
         return $this->render("register", "S'inscrire", $data);
@@ -33,11 +39,18 @@ class RegisterController extends AbstractController
     public function login(): mixed
     {
         $data = [];
+        $data["csrf_token"] = $this->getCsrfToken();
 
         //Test si le formulaire est soumis
         if ($this->isFormSubmitted($_POST)) {
+            if (!$this->isCsrfTokenValid($_POST)) {
+                $data["errors"]["_form"] = "Token CSRF invalide";
+                return $this->render("login", "Se connecter", $data);
+            }
             //Logique de la connexion
-            $data["msg"] = $this->securityService->authenticate($_POST);
+            $result = $this->securityService->authenticate($_POST);
+            $data["errors"] = $result["errors"] ?? [];
+            $data["msg"] = $result["message"] ?? "";
         }
 
         return $this->render("login", "Se connecter", $data);

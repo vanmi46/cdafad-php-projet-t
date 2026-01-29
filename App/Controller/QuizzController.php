@@ -2,13 +2,8 @@
 
 namespace App\Controller;
 
-use App\Controller\AbstractController;
 use App\Service\CategoryService;
 use App\Service\QuizzService;
-use App\Entity\Entity;
-use App\Entity\Quizz;
-use App\Entity\Category;
-use App\Entity\User;
 
 class QuizzController extends AbstractController
 {
@@ -26,9 +21,16 @@ class QuizzController extends AbstractController
         $categories = $this->categoryService->getAllCategories();
         $data = [];
         $data["categories"] = $categories;
+        $data["csrf_token"] = $this->getCsrfToken();
 
         if ($this->isFormSubmitted($_POST)) {
-           $data["msg"] = $this->quizzService->addQuizz($_POST);
+            if (!$this->isCsrfTokenValid($_POST)) {
+                $data["errors"]["_form"] = "Token CSRF invalide";
+                return $this->render("add_quizz", "Ajouter un quizz", $data);
+            }
+           $result = $this->quizzService->addQuizz($_POST);
+           $data["errors"] = $result["errors"] ?? [];
+           $data["msg"] = $result["message"] ?? "";
         }
 
         return $this->render("add_quizz", "Ajouter un quizz", $data);

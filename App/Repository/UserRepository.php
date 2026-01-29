@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Repository\AbstractRepository;
 use App\Entity\Entity;
 use App\Entity\User;
-use App\Entity\Media;
+use App\Utils\Logger;
 
 class UserRepository extends AbstractRepository
 {
@@ -43,7 +43,8 @@ class UserRepository extends AbstractRepository
             $entity->setId($id);
         }
         catch(\Exception $e){
-            echo $e->getMessage();
+            Logger::error("UserRepository.save failed", ["error" => $e->getMessage()]);
+            return null;
         }
         return $entity;
     }
@@ -67,6 +68,7 @@ class UserRepository extends AbstractRepository
             } 
             return true;
         } catch(\PDOException $e) {
+            Logger::error("UserRepository.isUserExists failed", ["error" => $e->getMessage()]);
             return false;
         }
     }
@@ -95,7 +97,7 @@ class UserRepository extends AbstractRepository
             }
 
         } catch(\PDOException $e){
-            echo $e->getMessage();
+            Logger::error("UserRepository.findByEmail failed", ["error" => $e->getMessage()]);
             return null;
         }
         return $user;

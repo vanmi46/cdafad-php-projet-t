@@ -2,18 +2,14 @@
 
 namespace App\Entity;
 
-use App\Entity\Entity;
-
 class Media extends Entity
 {
-    //Attributs
     private ?int $id;
     private string $url;
     private string $alt;
     private ?\DateTimeImmutable $createdAt;
     private ?\DateTimeImmutable $updatedAt;
 
-    //Constructeur
     public function __construct(
         ?string $url ="",
         ?string $alt = "",
@@ -25,7 +21,6 @@ class Media extends Entity
         $this->createdAt = $createdAt;
     }
 
-    //Getters et Setters
     public function getId():?int
     {
         return $this->id;

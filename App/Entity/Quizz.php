@@ -2,16 +2,11 @@
 
 namespace App\Entity;
 
-use App\Entity\Entity;
-use App\Entity\Media;
-use App\Entity\User;
-use App\Entity\Category;
 use Mithridatem\Validation\Attributes\NotBlank;
 use Mithridatem\Validation\Attributes\Length;
 
 class Quizz extends Entity
 {
-    //Attributs
     private ?int $id;
     #[NotBlank]
     #[Length(2,50)]
@@ -25,13 +20,11 @@ class Quizz extends Entity
     private User $author;
     private array $categories;
 
-    //Constructeur
     public function __construct() 
     {
         $this->categories = [];
     }
 
-    //Getters et Setters
     public function getId(): ?int
     {
         return $this->id;

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Entity;
 use App\Entity\Category;
 use App\Repository\AbstractRepository;
+use App\Utils\Logger;
 
 class CategoryRepository extends AbstractRepository
 {
@@ -26,7 +27,8 @@ class CategoryRepository extends AbstractRepository
             $req->setFetchMode(\PDO::FETCH_CLASS| \PDO::FETCH_PROPS_LATE, Category::class);
             $categories = $req->fetchAll();
         } catch(\PDOException $e) {
-            throw new \Exception("Erreur SQL");
+            Logger::error("CategoryRepository.findAll failed", ["error" => $e->getMessage()]);
+            return [];
         }
         return $categories;
     }
@@ -49,7 +51,8 @@ class CategoryRepository extends AbstractRepository
             $entity->setId($id);
         }
         catch(\Exception $e){
-            echo $e->getMessage();
+            Logger::error("CategoryRepository.save failed", ["error" => $e->getMessage()]);
+            return null;
         }
         return $entity;
     }
@@ -72,6 +75,7 @@ class CategoryRepository extends AbstractRepository
             } 
             return true;
         } catch(\PDOException $e) {
+            Logger::error("CategoryRepository.isCategoryExists failed", ["error" => $e->getMessage()]);
             return false;
         }
     }
