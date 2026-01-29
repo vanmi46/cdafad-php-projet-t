@@ -18,10 +18,12 @@ class RegisterController extends AbstractController
     public function register(): mixed
     {
         $data = [];
+        //Génération du token CSRF
         $data["csrf_token"] = $this->getCsrfToken();
         
         //Test si le formulaire est submit
         if ($this->isFormSubmitted($_POST,  "submit")) {
+            //Vérification du token CSRF
             if (!$this->isCsrfTokenValid($_POST)) {
                 $data["errors"]["_form"] = "Token CSRF invalide";
                 return $this->render("register", "S'inscrire", $data);
