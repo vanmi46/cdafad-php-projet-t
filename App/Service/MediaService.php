@@ -35,4 +35,9 @@ class MediaService
         //Ajouter en BDD le media
         return $this->mediaRepository->save($media);
     }
+
+    public function getDefaultImg(): ?Media 
+    {
+        return $this->mediaRepository->find(1);
+    }
 }

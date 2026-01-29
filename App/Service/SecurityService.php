@@ -10,6 +10,8 @@ use App\Repository\UserRepository;
 use Mithridatem\Validation\Validator;
 use Mithridatem\Validation\Exception\ValidationException;
 use App\Service\MediaService;
+use DateTime;
+use DateTimeImmutable;
 
 class SecurityService
 {
@@ -78,12 +80,20 @@ class SecurityService
         //Hash du passwords
         $hash = password_hash($user->getPassword(), PASSWORD_DEFAULT);
         $user->setPassword($hash);
-        try {
-           $media = $this->mediaService->addMedia($_FILES["img"]);
-        } catch(\Exception $e) {
-            echo $e->getMessage();
+        //test si le media existe
+        if (isset($_FILES["img"]) && !empty($_FILES["img"]["tmp_name"])) {
+            try {
+                //Import du fichier
+                $media = $this->mediaService->addMedia($_FILES["img"]);
+            } catch(\Exception $e) {
+                echo $e->getMessage();
+            }
+        } 
+        //Image par default
+        else {
+            $media = $this->mediaService->getDefaultImg();
         }
-
+        
         $user->setMedia($media);
 
         //ajout en BDD
@@ -117,8 +127,9 @@ class SecurityService
         $_SESSION["user"] = [
             "id" => $user->getId(),
             "email" => $user->getEmail(),
-            "pseudo" => $user->getEmail(),
-            "roles" => $user->getRoles()
+            "pseudo" => $user->getPseudo(),
+            "roles" => $user->getRoles(),
+            "img" => $user->getMedia()
         ];
         return "Connecté";
     }

@@ -22,7 +22,7 @@ class User extends Entity
     #[Email]
     private string $email;
     #[NotBlank]
-    #[Pattern('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$/')]
+    #[Pattern('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/')]
     private string $password;
     private bool $status = true;
     private bool $active = true;
@@ -201,6 +201,7 @@ class User extends Entity
     public static function hydrate(array $data): self
     {
         $user = new User();
+        $media = new Media("","",null);
         foreach ($data as $key => $value) {
             if ($key == "created_at" || $key == "createdAt" ) {
                 $user->setCreatedAt(new \DateTimeImmutable($value));
@@ -210,10 +211,24 @@ class User extends Entity
             }
             else if ($key == "deleted_at" || $key == "deletedAt") {
                 $user->setDeletedAt(new \DateTimeImmutable($value));
-            } else {
+            } 
+            else if ($key == "url_image") {
+                $media->setUrl($value);
+            }
+            else if ($key == "alt_image") {
+                $media->setAlt($value);
+            }
+            else if ($key == "created_at_image") {
+                $media->setCreatedAt(new \DateTimeImmutable($value));
+            }
+            else if ($key == "id_image") {
+                $media->setId($value);
+            }
+            else {
                 $user->$key = $value;
             }
         }
+        $user->setMedia($media);
         return $user;
     }
 }

@@ -75,8 +75,10 @@ class UserRepository extends AbstractRepository
     {
         try {
             //2 Ecrire la requête SQL
-        $sql = "SELECT u.id, u.firstname, u.lastname, u.email, u.pseudo, u.password, u.roles, u.created_at
-            FROM users AS u WHERE u.email = ?";
+        $sql = "SELECT u.id, u.firstname, u.lastname, u.email, u.pseudo, u.password, u.roles, u.created_at, m.url AS url_image, 
+            m.alt AS alt_image, m.created_at AS created_at_image, m.id AS id_image
+            FROM users AS u INNER JOIN media AS m ON u.media_id = m.id
+            WHERE u.email = ?";
             //3 Préparer la requête
             $req = $this->connect->prepare($sql);
             //4 Assigner les paarmètres(bindParam)
@@ -84,7 +86,6 @@ class UserRepository extends AbstractRepository
             //5 exécuter la requête
             $req->execute();
             //6 récupérer la réponse (SELECT)
-            //$req->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, User::class);
             $user = $req->fetch(\PDO::FETCH_ASSOC);
             //Hydratation en objet User
             if (!empty($user)) {

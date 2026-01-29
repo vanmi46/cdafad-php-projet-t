@@ -12,7 +12,7 @@
     <!-- Import du menu -->
     <?php include 'components/component_navbar.php'; ?>
     <main class="container-fluid">
-        <form action="" method="post">
+        <form action="" method="post" enctype="multipart/form-data">
             <h1>Ajouter un compte</h1>
             <input type="text" name="firstname" placeholder="Saisir votre prénom">
             <input type="text" name="lastname" placeholder="Saisir votre nom">
@@ -20,6 +20,7 @@
             <input type="email" name="email" placeholder="Saisir votre email">
             <input type="password" name="password" placeholder="Saisir votre mot de passe">
             <input type="password" name="confirm-password" placeholder="Confirmer votre mot de passe">
+            <input type="file" name="img">
             <input type="submit" value="Inscription" name="submit">
             <p><?= $data["msg"] ?? ""  ?></p>
         </form>
